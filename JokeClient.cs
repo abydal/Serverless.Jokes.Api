@@ -8,10 +8,13 @@ namespace Jokes.Api {
 
         public static async Task<JokeResponse> GetRandomJoke (string[] limitTo, string[] exclude) {
 
+            var excludes = exclude.Length > 0 ? $"[{string.Join (",", exclude)}]" : null;
+            var limit = limitTo.Length > 0 ? $"[{string.Join (",", limitTo)}]" : null;
+
             var url = "http://api.icndb.com"
                 .AppendPathSegments ("jokes", "random")
-                .SetQueryParam ("exclude", $"[{string.Join(",",exclude)}]")
-                .SetQueryParam ("limitTo", $"[{string.Join (",", limitTo)}]");
+                .SetQueryParam ("exclude", excludes)
+                .SetQueryParam ("limitTo", limit);
 
             var response = await client.GetAsync (url);
 
