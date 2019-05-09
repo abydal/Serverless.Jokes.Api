@@ -1,5 +1,6 @@
 using System.Net.Http;
 using System.Threading.Tasks;
+using Flurl;
 
 namespace Jokes.Api {
     public static class JokeClient {
@@ -7,12 +8,12 @@ namespace Jokes.Api {
 
         public static async Task<JokeResponse> GetRandomJoke (string[] limitTo, string[] exclude) {
 
-            var excludes = exclude != null && exclude.Length > 0 ? $"exlude=[{string.Join(",",exclude)}]" : string.Empty;
-            var limitedTo = limitTo != null && limitTo.Length > 0 ? $"limitTo=[{string.Join (",", limitTo)}]" : string.Empty;
-            var queryString = string.Join ("&", limitedTo, excludes);
-            queryString = !string.IsNullOrEmpty (queryString) ? $"?{queryString}" : string.Empty;
+            var url = "http://api.icndb.com"
+                .AppendPathSegments ("jokes", "random")
+                .SetQueryParam ("exclude", $"[{string.Join(",",exclude)}]")
+                .SetQueryParam ("limitTo", $"[{string.Join (",", limitTo)}]");
 
-            var response = await client.GetAsync ($"http://api.icndb.com/jokes/random{queryString}");
+            var response = await client.GetAsync (url);
 
             return Newtonsoft.Json.JsonConvert.DeserializeObject<JokeResponse> (await response.Content.ReadAsStringAsync ());
         }
